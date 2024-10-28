@@ -1,13 +1,13 @@
-# Suppap (Surprise Wallpaper) 🖼️
-
 <div align="center">
+
+# Suppap (Surprise Wallpaper)
 
 [![GitHub stars](https://img.shields.io/github/stars/iamDyeus/suppap?style=social)](https://github.com/iamDyeus/suppap/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/iamDyeus/suppap?style=social)](https://github.com/iamDyeus/suppap/network/members)
 [![GitHub issues](https://img.shields.io/github/issues/iamDyeus/suppap)](https://github.com/iamDyeus/suppap/issues)
 [![GitHub license](https://img.shields.io/github/license/iamDyeus/suppap)](https://github.com/iamDyeus/suppap/blob/main/LICENSE)
 
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&pause=1000&color=2C9DF7&center=true&vCenter=true&width=435&lines=Surprise+Your+Friends+with+Random+Wallpapers!;Automatically+Changes+Wallpapers;Cross-Platform+Support;Easy+to+Setup+and+Use" alt="Typing SVG" />
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&pause=1000&color=2C9DF7&center=true&vCenter=true&width=535&lines=Surprise+Your+Friends+with+Random+Wallpapers!;Automatically+Changes+Wallpapers;Cross-Platform+Support;Easy+to+Setup+and+Use" alt="Typing SVG" />
 
 </div>
 
@@ -28,7 +28,7 @@ Suppap (short for Surprise Wallpaper) is a fun, mischievous little application d
 1.) Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/suppap.git
+git clone https://github.com/iamDyeus/suppap.git
 cd suppap
 ```
 
@@ -36,18 +36,19 @@ cd suppap
 
 ```bash
 pip install -r requirements.txt
+cd src
 ```
 
 3.) Run the application:
 
 ```bash
-python src/main.py
+python main.py
 ```
 
 4.) To restore the default wallpaper and stop the application:
 
 ```bash
-python src/main.py --back-to-normal
+python main.py --back-to-normal
 ```
 
 ### ⚙ Configuration
