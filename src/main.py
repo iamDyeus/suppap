@@ -39,11 +39,18 @@ class WallpaperManager:
         self.logger.log_message("Setting up wallpaper manager")
         self.scheduler.schedule_task(self.config.TASK_NAME, self.config.WALLPAPER_CHANGE_INTERVAL)
         downloaded_images = self.wallpaper_changer.image_manager.download_images(10)
-        self.logger.log_message(f"Downloaded {len(downloaded_images)} images")
+        """self.logger.log_message(f"Downloaded {len(downloaded_images)} images")
         if downloaded_images:
             self.wallpaper_changer.change_wallpaper()
-        self.logger.log_message("Wallpaper manager setup complete")
+        self.logger.log_message("Wallpaper manager setup complete")"""
 
+        filtered_images = [img for img in downloaded_images if img.score >= self.config.MIN_SCORE]
+        self.logger.log_message(f"Downloaded and filtered {len(filtered_images)} images based on MIN_SCORE")
+        
+        if filtered_images:
+            self.wallpaper_changer.change_wallpaper()
+        self.logger.log_message("Wallpaper manager setup complete")
+        
     def cleanup(self):
         """Remove the application from startup and restore default wallpaper."""
         self.scheduler.remove_task(self.config.TASK_NAME)
