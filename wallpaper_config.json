@@ -1,0 +1,14 @@
+{
+    "interval": 60,
+    "subreddits": [
+        "EarthPorn",
+        "CityPorn",
+        "SpacePorn",
+        "Art"
+    ],
+    "image_limit": 100,
+    "min_resolution": [
+        1920,
+        1080
+    ]
+}
