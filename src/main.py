@@ -19,6 +19,8 @@ from config import Config
 from utils import Logger, OSCompatibilityChecker
 from scheduler import TaskScheduler
 from wallpaper_changer import WallpaperChanger
+import traceback
+import datetime
 
 CONFIG_FILE = "wallpaper_config.json"
 
@@ -151,6 +153,7 @@ def parse_arguments():
     control_group.add_argument('--start', action='store_true', help="Start the wallpaper changer service")
     control_group.add_argument('--stop', action='store_true', help="Stop the wallpaper changer service")
     control_group.add_argument('--change-now', action='store_true', help="Change wallpaper immediately")
+    control_group.add_argument('--scheduled-run', action='store_true', help=argparse.SUPPRESS)  # Hidden argument for scheduled tasks
     
     # Configuration management
     config_group = parser.add_argument_group('Configuration Management')
@@ -179,11 +182,28 @@ def main():
     """
     args = parse_arguments()
     manager = WallpaperManager()
+    log_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'wallpaper_changer.log')
 
     try:
-        if args.start:
+        with open(log_file, 'a') as f:
+            f.write(f"\n{'='*50}\n")
+            f.write(f"Script started at: {datetime.datetime.now()}\n")
+            f.write(f"Arguments: {vars(args)}\n")
+            f.write(f"Current directory: {os.getcwd()}\n")
+            f.write(f"Script path: {os.path.abspath(__file__)}\n")
+
+        if args.scheduled_run:
+            # This is a scheduled run, just change the wallpaper
+            with open(log_file, 'a') as f:
+                f.write("Executing scheduled run\n")
+            manager.change_now()
+            with open(log_file, 'a') as f:
+                f.write("Scheduled run completed\n")
+        elif args.start:
             manager.start()
             print("Wallpaper Changer service started.")
+            with open(log_file, 'a') as f:
+                f.write("Service started\n")
         elif args.stop:
             manager.stop()
             print("Wallpaper Changer service stopped.")
@@ -217,8 +237,11 @@ def main():
             parser.print_help()
 
     except Exception as e:
-        print(f"Error: {str(e)}")
-        manager.logger.log_message(f"Error: {str(e)}")
+        error_msg = f"Error: {str(e)}\n{traceback.format_exc()}"
+        print(error_msg)
+        with open(log_file, 'a') as f:
+            f.write(f"ERROR: {error_msg}\n")
+        manager.logger.log_message(error_msg)
 
 if __name__ == "__main__":
     main()
