@@ -16,8 +16,8 @@ class Config:
     """
     A class to store all configuration settings for the Wallpaper Changer application.
     """
-    MIN_SCORE = 100
-    WALLPAPER_CHANGE_INTERVAL = 60  # 1 hour in seconds
+    MIN_SCORE = 50
+    WALLPAPER_CHANGE_INTERVAL = 120  # 2 hour in seconds
     IMAGE_FOLDER = os.path.join(os.path.dirname(__file__), 'images')
     SUBREDDITS = ['EarthPorn', 'CityPorn', 'SpacePorn', 'Art']
 
