@@ -32,11 +32,105 @@ class TaskScheduler:
 
     def _schedule_windows(self, task_name, interval):
         script_path = os.path.abspath(sys.argv[0])
-        # Convert interval from seconds to minutes, ensuring a minimum of 1 minute
+        script_dir = os.path.dirname(script_path)
+        
+        # Create a batch file to run the script
+        batch_path = os.path.join(script_dir, 'run_wallpaper_changer.bat')
+        with open(batch_path, 'w') as f:
+            f.write('@echo off\n')
+            f.write(f'cd /d "{script_dir}"\n')
+            f.write(f'python "{script_path}" --scheduled-run >> "{script_dir}\\wallpaper_changer.log" 2>&1\n')
+
+        # Make the batch file executable
+        os.chmod(batch_path, 0o755)
+
+        # Convert interval from seconds to minutes
         interval_minutes = max(1, interval // 60)
-        command = f'schtasks /create /tn {task_name} /tr "python {script_path}" /sc minute /mo {interval_minutes} /f'
-        print(f"Running command: {command}")
-        subprocess.run(command, shell=True, check=True)
+
+        try:
+            # First try to delete any existing task
+            subprocess.run(f'schtasks /delete /tn "{task_name}" /f', 
+                         shell=True, 
+                         stderr=subprocess.DEVNULL,
+                         stdout=subprocess.DEVNULL)
+        except:
+            pass  # Ignore if task doesn't exist
+
+        # Create XML file for task definition
+        xml_path = os.path.join(script_dir, 'task_definition.xml')
+        xml_content = f"""<?xml version="1.0" encoding="UTF-16"?>
+<Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
+  <RegistrationInfo>
+    <Description>Wallpaper Changer Task</Description>
+  </RegistrationInfo>
+  <Triggers>
+    <TimeTrigger>
+      <Repetition>
+        <Interval>PT{interval_minutes}M</Interval>
+        <StopAtDurationEnd>false</StopAtDurationEnd>
+      </Repetition>
+      <StartBoundary>2024-01-01T00:00:00</StartBoundary>
+      <Enabled>true</Enabled>
+    </TimeTrigger>
+  </Triggers>
+  <Principals>
+    <Principal id="Author">
+      <LogonType>InteractiveToken</LogonType>
+      <RunLevel>HighestAvailable</RunLevel>
+    </Principal>
+  </Principals>
+  <Settings>
+    <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>
+    <DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>
+    <StopIfGoingOnBatteries>false</StopIfGoingOnBatteries>
+    <AllowHardTerminate>false</AllowHardTerminate>
+    <StartWhenAvailable>true</StartWhenAvailable>
+    <RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable>
+    <IdleSettings>
+      <StopOnIdleEnd>false</StopOnIdleEnd>
+      <RestartOnIdle>false</RestartOnIdle>
+    </IdleSettings>
+    <AllowStartOnDemand>true</AllowStartOnDemand>
+    <Enabled>true</Enabled>
+    <Hidden>false</Hidden>
+    <RunOnlyIfIdle>false</RunOnlyIfIdle>
+    <WakeToRun>false</WakeToRun>
+    <ExecutionTimeLimit>PT0S</ExecutionTimeLimit>
+    <Priority>7</Priority>
+  </Settings>
+  <Actions Context="Author">
+    <Exec>
+      <Command>{batch_path}</Command>
+      <WorkingDirectory>{script_dir}</WorkingDirectory>
+    </Exec>
+  </Actions>
+</Task>"""
+
+        with open(xml_path, 'w', encoding='utf-16') as f:
+            f.write(xml_content)
+
+        try:
+            # Create the task using the XML definition
+            result = subprocess.run(
+                f'schtasks /create /tn "{task_name}" /xml "{xml_path}" /f',
+                shell=True,
+                capture_output=True,
+                text=True
+            )
+            
+            if result.returncode != 0:
+                raise Exception(f"Failed to create task: {result.stderr}")
+
+            # Clean up the XML file
+            os.remove(xml_path)
+            
+            print(f"Successfully created scheduled task: {task_name}")
+            
+        except Exception as e:
+            print(f"Error creating scheduled task: {str(e)}")
+            if os.path.exists(xml_path):
+                os.remove(xml_path)
+            raise
 
     def _schedule_macos(self, script_path, interval):
         plist_content = f'''<?xml version="1.0" encoding="UTF-8"?>
@@ -49,6 +143,7 @@ class TaskScheduler:
             <array>
                 <string>/usr/bin/python3</string>
                 <string>{script_path}</string>
+                <string>--scheduled-run</string>
             </array>
             <key>StartInterval</key>
             <integer>{interval}</integer>
@@ -62,7 +157,7 @@ class TaskScheduler:
         subprocess.run(['launchctl', 'load', plist_path], check=True)
 
     def _schedule_linux(self, script_path, interval):
-        cron_command = f"*/{interval // 60} * * * * /usr/bin/python3 {script_path}"
+        cron_command = f"*/{interval // 60} * * * * /usr/bin/python3 {script_path} --scheduled-run"
         current_crontab = subprocess.check_output('crontab -l', shell=True, universal_newlines=True)
         new_crontab = current_crontab + cron_command + '\n'
         subprocess.run('echo "{}" | crontab -'.format(new_crontab), shell=True, check=True)
@@ -161,11 +256,15 @@ class TaskScheduler:
     def remove_task(self, task_name):
         """Remove the scheduled task."""
         if self.os_type == 'Windows':
-            self._remove_task_windows(task_name)
-        elif self.os_type == 'Darwin':  # macOS
-            self._remove_task_macos(task_name)
-        else:  # Linux
-            self._remove_task_linux(task_name)
+            try:
+                subprocess.run(f'schtasks /delete /tn "{task_name}" /f', 
+                             shell=True,
+                             check=True,
+                             capture_output=True)
+                print(f"Successfully removed task: {task_name}")
+            except subprocess.CalledProcessError as e:
+                if "The system cannot find the file specified" not in str(e.stderr):
+                    print(f"Error removing task: {str(e)}")
 
     def _remove_task_windows(self, task_name):
         subprocess.run(f'schtasks /delete /tn {task_name} /f', shell=True, check=True)

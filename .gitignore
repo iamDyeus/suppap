@@ -9,6 +9,9 @@ __pycache__/
 # C extensions
 *.so
 
+# Generated files
+run_wallpaper_changer.bat
+
 # Distribution / packaging
 .Python
 build/
