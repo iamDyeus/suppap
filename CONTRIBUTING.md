@@ -89,6 +89,38 @@ We follow the [PEP 8](https://www.python.org/dev/peps/pep-0008/) style guide for
 - Keep lines to a maximum of 79 characters
 - Use meaningful variable names
 
+## Testing
+
+### Running Tests
+
+Before submitting your changes, please make sure all tests pass. We use `pytest` with `pytest-cov` for coverage. Follow these steps to run the tests:
+
+1. **Set up the testing environment** by installing required packages:
+   ```bash
+   pip install -r requirements.txt
+    ```
+2. **Run all the tests**:
+    ```bash
+    pytest --cov=src tests/
+    ```
+3. **Run specific tests**:
+    ```bash
+    pytest tests/test_<file_name>.py
+    ```
+This is helpful for testing only the functionality you changed.
+
+### Writing Tests
+
+When adding new features or modifying existing functionality, please write or update tests to ensure code quality and prevent future regressions. We use unittest along with pytest for running tests.
+
+- Place test files in the tests/ directory and name them following the pattern `test_<module_name>.py`.
+- Use descriptive function names for tests. For example, `test_change_wallpaper_success` clearly indicates what the test checks.
+- Mock external dependencies (like network calls) using `unittest.mock` to avoid dependencies on external services.
+- Ensure tests are deterministic and can run independently of each other.
+
+
+For more information on writing tests, see the [pytest documentation](https://docs.pytest.org/en/stable/) and the [unittest documentation](https://docs.python.org/3/library/unittest.html).
+
 ## Join The Project Team
 
 Interested in becoming a core contributor? Start by making consistent contributions and engaging with the community. We'll reach out if we think you'd be a good fit for the team!

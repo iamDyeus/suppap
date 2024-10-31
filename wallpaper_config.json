@@ -1,14 +1,12 @@
 {
-    "interval": 60,
+    "interval": 300,
     "subreddits": [
-        "EarthPorn",
-        "CityPorn",
-        "SpacePorn",
-        "Art"
+        "wallpapers",
+        "spaceporn"
     ],
-    "image_limit": 100,
+    "image_limit": 50,
     "min_resolution": [
-        1920,
-        1080
+        2560,
+        1440
     ]
 }
