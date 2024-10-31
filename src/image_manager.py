@@ -64,7 +64,7 @@ class ImageManager:
                 raise ValueError("Unexpected Reddit API response format")
 
             image_url = post_data['url']
-
+            score = post_data['score']
             # Check if the URL ends with an image extension
             if not image_url.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')):
                 # If it's an imgur link without an extension, append .jpg
@@ -83,7 +83,8 @@ class ImageManager:
             with open(image_path, 'wb') as f:
                 f.write(image_response.content)
             
-            return image_path
+            return {"url": image_path, "score": score}
+
         except (requests.RequestException, ValueError, KeyError) as e:
             print(f"Error downloading image from r/{subreddit}: {e}")
             return None
