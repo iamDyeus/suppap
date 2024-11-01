@@ -15,10 +15,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3  
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4 
         with:
           python-version: '3.8'
 
@@ -30,11 +30,11 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          pytest --cov=src tests/
+          pytest --cov=src tests/ --disable-warnings
 
       - name: Upload coverage report
         if: success()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3 
         with:
           name: coverage-report
           path: .coverage
