@@ -16,6 +16,7 @@ Suppap is all about fun and surprise, and we're excited to have you join in on m
 - [Styleguides](#styleguides)
   - [Git Commit Messages](#git-commit-messages)
   - [Python Styleguide](#python-styleguide)
+- [Testing](#testing)
 - [Join The Project Team](#join-the-project-team)
 
 ## Code of Conduct
