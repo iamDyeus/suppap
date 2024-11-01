@@ -1,4 +1,4 @@
- import os
+import os
 import random
 import requests
 import logging
@@ -99,41 +99,7 @@ class ImageManager:
             logging.warning("No images available")
             return None
 
-# UI/UX enhancement: Displaying the image in a simple GUI
-from tkinter import Tk, Label, Button, PhotoImage
 
-class ImageViewer:
-    """
-    A simple GUI to display the selected image using Tkinter.
-    """
-
-    def __init__(self, image_manager):
-        self.image_manager = image_manager
-        self.window = Tk()
-        self.window.title("Wallpaper Changer")
-        self.label = Label(self.window)
-        self.label.pack()
-        self.button = Button(self.window, text="Change Wallpaper", command=self.update_image)
-        self.button.pack()
-        self.update_image()
-
-    def update_image(self):
-        image_path = self.image_manager.get_random_image()
-        if image_path:
-            img = PhotoImage(file=image_path)
-            self.label.config(image=img)
-            self.label.image = img
-        else:
-            self.label.config(text="No images available")
-
-    def run(self):
-        self.window.mainloop()
-
-# Example usage
-if __name__ == "__main__":
-    manager = ImageManager()
-    manager.download_images(5)
-    viewer = ImageViewer(manager)
     viewer.run()
 
 
