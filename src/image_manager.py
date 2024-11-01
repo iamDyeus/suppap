@@ -47,7 +47,7 @@ class ImageManager:
             data = response.json()
             post_data = self.extract_post_data(data)
             image_url = post_data['url']
-
+            score = post_data['score']
             # Check if the URL ends with an image extension
             if not image_url.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')):
                 # If it's an imgur link without an extension, append .jpg
@@ -64,7 +64,12 @@ class ImageManager:
 
             with open(image_path, 'wb') as f:
                 f.write(image_response.content)
-            return image_path
+
+            
+            return {"url": image_path, "score": score}
+
+
+            #return image_path
         
         except (requests.RequestException, ValueError, KeyError) as e:
             logging.error(f"Error downloading image from r/{subreddit}: {e}")
