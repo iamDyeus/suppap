@@ -28,13 +28,7 @@ jobs:
           pip install -r requirements.txt
           pip install pytest pytest-cov
 
-      - name: Set PYTHONPATH
-        run: |
-          export PYTHONPATH="${{ github.workspace }}/src"
-
       - name: Run tests with coverage
-        env:
-          PYTHONPATH: ${{ github.workspace }}/src
         run: |
           pytest --cov=src tests/ --disable-warnings
 
@@ -44,3 +38,6 @@ jobs:
         with:
           name: coverage-report
           path: .coverage
+
+      - name: Show directory structure for debugging
+        run: ls -R
