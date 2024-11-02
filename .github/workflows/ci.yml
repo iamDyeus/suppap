@@ -20,7 +20,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4 
         with:
-          python-version: '3.8'
+          python-version: '3.12'
 
       - name: Install dependencies
         run: |
@@ -28,7 +28,13 @@ jobs:
           pip install -r requirements.txt
           pip install pytest pytest-cov
 
+      - name: Set PYTHONPATH
+        run: |
+          export PYTHONPATH="${{ github.workspace }}/src"
+
       - name: Run tests with coverage
+        env:
+          PYTHONPATH: ${{ github.workspace }}/src
         run: |
           pytest --cov=src tests/ --disable-warnings
 
